@@ -1,0 +1,23 @@
+{
+  "extends": "@tsconfig/node18/tsconfig.json",
+  "compilerOptions": {
+    "module": "commonjs",
+    "declaration": true,
+    "inlineSources": true,
+    "strictNullChecks": true,
+    "strictPropertyInitialization": true,
+    "strictFunctionTypes": true,
+    "noImplicitAny": false,
+    "noImplicitThis": true,
+    "noImplicitReturns": true,
+    "moduleResolution": "node",
+    "skipLibCheck": true,
+    "sourceMap": true,
+    "typeRoots": ["./ts-declarations", "node_modules/@types"],
+    "outDir": "./build",
+    "rootDir": "src",
+    "allowSyntheticDefaultImports": true
+  },
+  "exclude": ["node_modules", "**/__mocks__/*", "**/__tests__/*"],
+  "include": ["./src"]
+}

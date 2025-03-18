@@ -1,0 +1,21 @@
+{
+  "name": "altsignjs",
+  "version": "0.0.1",
+  "description": "JavaScript implementation of AltSign",
+  "main": "build/index.js",
+  "scripts": {
+    "watch": "tsc --watch",
+    "build": "tsc",
+    "publish": "echo \"This package is private.\"; exit 1",
+    "prepare": "yarn build",
+    "lint": "eslint . --ext .ts",
+    "test": "jest"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@tsconfig/node18": "^18.2.2",
+    "@types/node": "^18.19.34",
+    "typescript": "^5.8.2"
+  }
+}
