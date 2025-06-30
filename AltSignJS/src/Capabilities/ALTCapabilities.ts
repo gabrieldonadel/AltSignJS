@@ -1,54 +1,42 @@
 // Entitlements
-export type ALTEntitlement =
-  | "application-identifier"
-  | "keychain-access-groups"
-  | "com.apple.security.application-groups"
-  | "get-task-allow"
-  | "com.apple.developer.team-identifier"
-  | "inter-app-audio"
-  | string; // Allows extensibility
-
-export const ALTEntitlement = {
-  ApplicationIdentifier: "application-identifier" as ALTEntitlement,
-  KeychainAccessGroups: "keychain-access-groups" as ALTEntitlement,
-  AppGroups: "com.apple.security.application-groups" as ALTEntitlement,
-  GetTaskAllow: "get-task-allow" as ALTEntitlement,
-  TeamIdentifier: "com.apple.developer.team-identifier" as ALTEntitlement,
-  InterAppAudio: "inter-app-audio" as ALTEntitlement,
-};
+export type ALTEntitlement = string;
+export const ALTEntitlementApplicationIdentifier: ALTEntitlement =
+  "application-identifier";
+export const ALTEntitlementKeychainAccessGroups: ALTEntitlement =
+  "keychain-access-groups";
+export const ALTEntitlementAppGroups: ALTEntitlement =
+  "com.apple.security.application-groups";
+export const ALTEntitlementGetTaskAllow: ALTEntitlement = "get-task-allow";
+export const ALTEntitlementTeamIdentifier: ALTEntitlement =
+  "com.apple.developer.team-identifier";
+export const ALTEntitlementInterAppAudio: ALTEntitlement = "inter-app-audio";
 
 // Features
-export type ALTFeature = "gameCenter" | "APG3427HIY" | "IAD53UNK2F" | string; // Allows extensibility
+export type ALTFeature = string;
+export const ALTFeatureGameCenter: ALTFeature = "gameCenter";
+export const ALTFeatureAppGroups: ALTFeature = "APG3427HIY";
+export const ALTFeatureInterAppAudio: ALTFeature = "IAD53UNK2F";
 
-export const ALTFeature = {
-  GameCenter: "gameCenter" as ALTFeature,
-  AppGroups: "APG3427HIY" as ALTFeature,
-  InterAppAudio: "IAD53UNK2F" as ALTFeature,
-};
-
-// Conversion functions
-export function entitlementForFeature(
+export function ALTEntitlementForFeature(
   feature: ALTFeature
 ): ALTEntitlement | null {
-  switch (feature) {
-    case ALTFeature.AppGroups:
-      return ALTEntitlement.AppGroups;
-    case ALTFeature.InterAppAudio:
-      return ALTEntitlement.InterAppAudio;
-    default:
-      return null;
+  if (feature === ALTFeatureAppGroups) {
+    return ALTEntitlementAppGroups;
+  } else if (feature === ALTFeatureInterAppAudio) {
+    return ALTEntitlementInterAppAudio;
   }
+
+  return null;
 }
 
-export function featureForEntitlement(
+export function ALTFeatureForEntitlement(
   entitlement: ALTEntitlement
 ): ALTFeature | null {
-  switch (entitlement) {
-    case ALTEntitlement.AppGroups:
-      return ALTFeature.AppGroups;
-    case ALTEntitlement.InterAppAudio:
-      return ALTFeature.InterAppAudio;
-    default:
-      return null;
+  if (entitlement === ALTEntitlementAppGroups) {
+    return ALTFeatureAppGroups;
+  } else if (entitlement === ALTEntitlementInterAppAudio) {
+    return ALTFeatureInterAppAudio;
   }
+
+  return null;
 }

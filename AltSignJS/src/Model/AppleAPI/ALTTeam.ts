@@ -8,10 +8,10 @@ export enum ALTTeamType {
 }
 
 export class ALTTeam {
-  public readonly name: string;
-  public readonly identifier: string;
-  public readonly type: ALTTeamType;
-  public readonly account: ALTAccount;
+  name: string;
+  identifier: string;
+  type: ALTTeamType;
+  account: ALTAccount;
 
   constructor(
     name: string,
@@ -25,66 +25,51 @@ export class ALTTeam {
     this.account = account;
   }
 
-  // Factory method for response parsing
-  static fromResponse(
-    response: Record<string, any>,
-    account: ALTAccount
+  static fromResponseDictionary(
+    account: ALTAccount,
+    responseDictionary: { [key: string]: any }
   ): ALTTeam | null {
-    const name = response.name;
-    const identifier = response.teamId;
-    const teamType = response.type;
+    const name = responseDictionary["name"];
+    const identifier = responseDictionary["teamId"];
+    const teamType = responseDictionary["type"];
 
     if (!name || !identifier || !teamType) {
       return null;
     }
 
-    let type: ALTTeamType = ALTTeamType.Unknown;
+    let type = ALTTeamType.Unknown;
 
-    switch (teamType) {
-      case "Company/Organization":
-        type = ALTTeamType.Organization;
-        break;
+    if (teamType === "Company/Organization") {
+      type = ALTTeamType.Organization;
+    } else if (teamType === "Individual") {
+      const memberships = responseDictionary["memberships"];
+      const membership = memberships?.[0];
+      const name = membership?.["name"];
 
-      case "Individual": {
-        const memberships: any[] = response.memberships || [];
-        const membership = memberships[0];
-
-        if (
-          memberships.length === 1 &&
-          membership?.name?.toLowerCase().includes("free")
-        ) {
-          type = ALTTeamType.Free;
-        } else {
-          type = ALTTeamType.Individual;
-        }
-        break;
+      if (memberships?.length === 1 && name?.toLowerCase().includes("free")) {
+        type = ALTTeamType.Free;
+      } else {
+        type = ALTTeamType.Individual;
       }
-
-      default:
-        type = ALTTeamType.Unknown;
+    } else {
+      type = ALTTeamType.Unknown;
     }
 
     return new ALTTeam(name, identifier, type, account);
   }
 
-  // Equality check
-  equals(other: ALTTeam): boolean {
-    return this.identifier === other.identifier;
+  description(): string {
+    return `<${this.constructor.name}: Name: ${this.name}>`;
   }
 
-  // Hash code simulation
-  get hashCode(): number {
-    let hash = 0;
-    for (let i = 0; i < this.identifier.length; i++) {
-      const char = this.identifier.charCodeAt(i);
-      hash = (hash << 5) - hash + char;
-      hash |= 0; // Convert to 32-bit integer
+  isEqual(object: any): boolean {
+    if (!(object instanceof ALTTeam)) {
+      return false;
     }
-    return hash;
+    return this.identifier === object.identifier;
   }
 
-  // String representation
-  toString(): string {
-    return `${this.constructor.name}: Name: ${this.name}`;
+  hash(): string {
+    return this.identifier;
   }
 }

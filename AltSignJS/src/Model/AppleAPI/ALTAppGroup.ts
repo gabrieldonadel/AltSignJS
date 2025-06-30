@@ -1,56 +1,37 @@
 export class ALTAppGroup {
-  public readonly name: string;
-  public readonly identifier: string;
-  public readonly groupIdentifier: string;
+  name: string;
+  identifier: string;
+  groupIdentifier: string;
 
-  constructor(name: string, identifier: string, groupIdentifier: string) {
+  constructor(responseDictionary: { [key: string]: any }) {
+    const name = responseDictionary["name"];
+    const identifier = responseDictionary["applicationGroup"];
+    const groupIdentifier = responseDictionary["identifier"];
+
+    if (!name || !identifier || !groupIdentifier) {
+      throw new Error("Invalid response dictionary.");
+    }
+
     this.name = name;
     this.identifier = identifier;
     this.groupIdentifier = groupIdentifier;
   }
 
-  // Factory method for response parsing
-  static fromResponse(response: Record<string, any>): ALTAppGroup | null {
-    const name = response.name;
-    const identifier = response.applicationGroup;
-    const groupIdentifier = response.identifier;
+  description(): string {
+    return `<${this.constructor.name}: ID: ${this.identifier}, GroupID: ${this.groupIdentifier}>`;
+  }
 
-    if (!name || !identifier || !groupIdentifier) {
-      return null;
+  isEqual(object: any): boolean {
+    if (!(object instanceof ALTAppGroup)) {
+      return false;
     }
-
-    return new ALTAppGroup(
-      name.toString(),
-      identifier.toString(),
-      groupIdentifier.toString()
-    );
-  }
-
-  // Equality check
-  equals(other: ALTAppGroup): boolean {
     return (
-      this.identifier === other.identifier &&
-      this.groupIdentifier === other.groupIdentifier
+      this.identifier === object.identifier &&
+      this.groupIdentifier === object.groupIdentifier
     );
   }
 
-  // Hash code simulation
-  get hashCode(): number {
-    const hashString = (str: string): number => {
-      let hash = 0;
-      for (let i = 0; i < str.length; i++) {
-        const char = str.charCodeAt(i);
-        hash = (hash << 5) - hash + char;
-        hash |= 0; // Convert to 32-bit integer
-      }
-      return hash;
-    };
-
-    return hashString(this.identifier) ^ hashString(this.groupIdentifier);
-  }
-
-  // String representation
-  toString(): string {
-    return `${this.constructor.name}: ID: ${this.identifier}, GroupID: ${this.groupIdentifier}`;
+  hash(): string {
+    return `${this.identifier}^${this.groupIdentifier}`;
   }
 }

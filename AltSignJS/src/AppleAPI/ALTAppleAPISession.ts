@@ -1,9 +1,9 @@
 import { ALTAnisetteData } from "../Model/AppleAPI/ALTAnisetteData";
 
 export class ALTAppleAPISession {
-  public readonly dsid: string;
-  public readonly authToken: string;
-  public readonly anisetteData: ALTAnisetteData;
+  dsid: string;
+  authToken: string;
+  anisetteData: ALTAnisetteData;
 
   constructor(dsid: string, authToken: string, anisetteData: ALTAnisetteData) {
     this.dsid = dsid;
@@ -11,10 +11,7 @@ export class ALTAppleAPISession {
     this.anisetteData = anisetteData;
   }
 
-  // Mimic Objective-C's description method
-  public toString(): string {
-    return `<${this.constructor.name}: DSID: ${this.dsid}, Auth Token: ${
-      this.authToken
-    }, Anisette Data: ${JSON.stringify(this.anisetteData)}>`;
+  description(): string {
+    return `<${this.constructor.name}: DSID: ${this.dsid}, Auth Token: ${this.authToken}, Anisette Data: ${this.anisetteData}>`;
   }
 }

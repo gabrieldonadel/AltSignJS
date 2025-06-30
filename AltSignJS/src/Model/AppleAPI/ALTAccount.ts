@@ -1,54 +1,43 @@
 export class ALTAccount {
-  public readonly appleID: string;
-  public readonly identifier: string;
-  public readonly firstName: string;
-  public readonly lastName: string;
+  appleID: string;
+  identifier: string;
+  firstName: string;
+  lastName: string;
 
-  constructor(
-    appleID: string,
-    identifier: string,
-    firstName: string,
-    lastName: string
-  ) {
+  constructor(responseDictionary: { [key: string]: any }) {
+    const appleID = responseDictionary["email"];
+    const identifier = responseDictionary["personId"];
+    const firstName =
+      responseDictionary["firstName"] ?? responseDictionary["dsFirstName"];
+    const lastName =
+      responseDictionary["lastName"] ?? responseDictionary["dsLastName"];
+
+    if (!appleID || !identifier || !firstName || !lastName) {
+      throw new Error("Invalid response dictionary.");
+    }
+
     this.appleID = appleID;
-    this.identifier = identifier;
+    this.identifier = identifier.toString();
     this.firstName = firstName;
     this.lastName = lastName;
   }
 
-  // Readonly computed property
   get name(): string {
-    // Simple concatenation for basic functionality
-    // For advanced localization, consider using Intl.DisplayNames
     return `${this.firstName} ${this.lastName}`.trim();
   }
 
-  // Equivalent of initWithResponseDictionary
-  static fromResponse(response: Record<string, any>): ALTAccount | null {
-    const appleID = response.email;
-    const identifier = response.personId?.toString();
-    const firstName = response.firstName || response.dsFirstName;
-    const lastName = response.lastName || response.dsLastName;
+  description(): string {
+    return `<${this.constructor.name}: ${this.name}, Apple ID: ${this.appleID}>`;
+  }
 
-    if (!appleID || !identifier || !firstName || !lastName) {
-      return null;
+  isEqual(object: any): boolean {
+    if (!(object instanceof ALTAccount)) {
+      return false;
     }
-
-    return new ALTAccount(
-      appleID.toString(),
-      identifier,
-      firstName.toString(),
-      lastName.toString()
-    );
+    return this.identifier === object.identifier;
   }
 
-  // Equality check
-  equals(other: ALTAccount): boolean {
-    return this.identifier === other.identifier;
-  }
-
-  // Description method
-  toString(): string {
-    return `${this.constructor.name}: Name: ${this.name}, Apple ID: ${this.appleID}`;
+  hash(): string {
+    return this.identifier;
   }
 }

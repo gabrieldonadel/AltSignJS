@@ -1,94 +1,81 @@
-// Assuming ALTFeature is defined elsewhere as a string type
-type ALTFeature = string;
+import { ALTFeature } from "../../Capabilities/ALTCapabilities";
 
 export class ALTAppID {
-  public readonly name: string;
-  public readonly identifier: string;
-  public readonly bundleIdentifier: string;
-  public readonly expirationDate: Date | null;
-  public readonly features: Record<ALTFeature, any>;
+  name: string;
+  identifier: string;
+  bundleIdentifier: string;
+  expirationDate?: Date;
+  features: { [key in ALTFeature]?: any };
 
   constructor(
     name: string,
     identifier: string,
     bundleIdentifier: string,
-    expirationDate: Date | null,
-    features: Record<ALTFeature, any>
+    expirationDate: Date | undefined,
+    features: { [key in ALTFeature]?: any }
   ) {
     this.name = name;
     this.identifier = identifier;
     this.bundleIdentifier = bundleIdentifier;
-    this.expirationDate = expirationDate ? new Date(expirationDate) : null;
-    this.features = { ...features };
+    this.expirationDate = expirationDate;
+    this.features = features;
   }
 
-  // Factory method for response parsing
-  static fromResponse(response: Record<string, any>): ALTAppID | null {
-    const name = response.name;
-    const identifier = response.appIdId;
-    const bundleIdentifier = response.identifier;
+  static fromResponseDictionary(responseDictionary: {
+    [key: string]: any;
+  }): ALTAppID | null {
+    const name = responseDictionary["name"];
+    const identifier = responseDictionary["appIdId"];
+    const bundleIdentifier = responseDictionary["identifier"];
 
     if (!name || !identifier || !bundleIdentifier) {
       return null;
     }
 
-    const allFeatures = response.features || {};
-    const enabledFeatures: ALTFeature[] = response.enabledFeatures || [];
+    const allFeatures = responseDictionary["features"] ?? {};
+    const enabledFeatures = responseDictionary["enabledFeatures"] ?? [];
 
-    const features: Record<ALTFeature, any> = {};
+    const features: { [key in ALTFeature]?: any } = {};
     for (const feature of enabledFeatures) {
-      features[feature] = allFeatures[feature];
+      features[feature as ALTFeature] = allFeatures[feature];
     }
 
-    const expirationDate = response.expirationDate
-      ? new Date(response.expirationDate)
-      : null;
+    const expirationDate = responseDictionary["expirationDate"];
 
     return new ALTAppID(
-      name.toString(),
-      identifier.toString(),
-      bundleIdentifier.toString(),
+      name,
+      identifier,
+      bundleIdentifier,
       expirationDate,
       features
     );
   }
 
-  // Equality check
-  equals(other: ALTAppID): boolean {
+  description(): string {
+    return `<${this.constructor.name}: Name: ${this.name}, ID: ${this.identifier}, BundleID: ${this.bundleIdentifier}>`;
+  }
+
+  isEqual(object: any): boolean {
+    if (!(object instanceof ALTAppID)) {
+      return false;
+    }
     return (
-      this.identifier === other.identifier &&
-      this.bundleIdentifier === other.bundleIdentifier
+      this.identifier === object.identifier &&
+      this.bundleIdentifier === object.bundleIdentifier
     );
   }
 
-  // Hash code simulation
-  get hashCode(): number {
-    const hashString = (str: string): number => {
-      let hash = 0;
-      for (let i = 0; i < str.length; i++) {
-        const char = str.charCodeAt(i);
-        hash = (hash << 5) - hash + char;
-        hash |= 0; // Convert to 32-bit integer
-      }
-      return hash;
-    };
-
-    return hashString(this.identifier) ^ hashString(this.bundleIdentifier);
+  hash(): string {
+    return `${this.identifier}^${this.bundleIdentifier}`;
   }
 
-  // Create a deep copy
   copy(): ALTAppID {
     return new ALTAppID(
       this.name,
       this.identifier,
       this.bundleIdentifier,
-      this.expirationDate ? new Date(this.expirationDate) : null,
-      { ...this.features }
+      this.expirationDate,
+      this.features
     );
-  }
-
-  // String representation
-  toString(): string {
-    return `${this.constructor.name}: Name: ${this.name}, ID: ${this.identifier}, BundleID: ${this.bundleIdentifier}`;
   }
 }
